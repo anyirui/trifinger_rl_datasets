@@ -101,7 +101,7 @@ class SimTriFingerCubeEnv(gym.Env):
         trajectory_file_path = (
             Path(__file__).resolve().parent
             / "data"
-            / "trifingerpro_shuffle_cube_trajectory_fast.npy"
+            / "trifingerpro_shuffle_cube_trajectory_fast_noscratch.npy"
         )
         with open(trajectory_file_path, "rb") as f:
             self._cube_reset_traj = np.load(f)
