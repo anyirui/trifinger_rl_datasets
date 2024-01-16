@@ -482,6 +482,8 @@ class SimTriFingerCubeEnv(gym.Env):
         self.active_goal = task.sample_goal(difficulty=self.difficulty)
         # visualize the goal (but not if image observations are used)
         if self.visualization and not self.image_obs:
+            if hasattr(self, "goal_marker"):
+                del self.goal_marker
             self.goal_marker = trifinger_simulation.visual_objects.CubeMarker(
                 width=task._CUBE_WIDTH,
                 position=self.active_goal.position,
@@ -667,10 +669,15 @@ class SimTriFingerCubeEnv(gym.Env):
         visualization."""
         pass
 
+    def _wait_until_timeindex(self, t: int):
+        """Wait until the given time index is reached."""
+        # The simulation is stepped automatically so there is nothing to do here.
+        pass
+
     def reset_cube(self):
         """Replay a recorded trajectory to move cube to center of arena."""
 
         for position in self._cube_reset_traj[: self._reset_trajectory_length : 2]:
             robot_action = self.platform.Action(position=position)
             t = self._append_desired_action(robot_action)
-            self.platform.wait_until_timeindex(t)  # type: ignore
+            self._wait_until_timeindex(t)  # type: ignore
