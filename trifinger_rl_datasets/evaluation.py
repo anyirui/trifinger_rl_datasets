@@ -73,7 +73,7 @@ class Evaluation:
         episode_batch_size = 8 if difficulty == 1 else 6
         ep_stats_list = []
         for i in range(n_episodes):
-            print("Start episode {}".format(i))
+            print("Start wonderful episode {}".format(i))
             # reset episode periodically to simulate start of a new robot job
             if i % episode_batch_size == 0:
                 initial_obs, initial_info = self.env.reset()
