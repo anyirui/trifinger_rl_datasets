@@ -74,14 +74,14 @@ class Evaluation:
             ep_stats = self.run_episode(initial_obs, initial_info, policy)
             ep_stats_list.append(ep_stats)
             # move fingers to initial position and wait until cube has settled down
-            self.env.reset_fingers(self._reset_time)
+            self.env.unwrapped.reset_fingers(self._reset_time)
             if i < n_episodes - 1:
                 # retrieve cube from barrier and center it approximately
                 self.env.sim_env.reset_cube()
             # Sample new goal
             self.env.sim_env.sample_new_goal()
             # move fingers to initial position and wait until cube has settled down
-            initial_obs, initial_info = self.env.reset_fingers(self._reset_time)
+            initial_obs, initial_info = self.env.unwrapped.reset_fingers(self._reset_time)
 
         overall_stats = {"n_episodes": n_episodes}
         for k in ep_stats_list[0]:

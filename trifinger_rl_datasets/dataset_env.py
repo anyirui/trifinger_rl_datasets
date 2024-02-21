@@ -906,6 +906,6 @@ class TriFingerDatasetEnv(gym.Env):
             raise NotImplementedError(
                 "The reset_fingers method is not available for real-robot data."
             )
-        obs, info = self.sim_env.reset_fingers(reset_wait_time)
+        obs, info = self.sim_env.unwrapped.reset_fingers(reset_wait_time)
         processed_obs = self._process_obs(obs)
         return processed_obs, info

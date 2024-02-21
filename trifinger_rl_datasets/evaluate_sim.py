@@ -8,6 +8,7 @@ import sys
 import typing
 
 import gymnasium as gym
+from gym.wrappers import RecordVideo
 
 from trifinger_rl_datasets import Evaluation, PolicyBase, TriFingerDatasetEnv
 
