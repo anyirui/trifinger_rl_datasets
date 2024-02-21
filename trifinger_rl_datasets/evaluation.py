@@ -13,6 +13,7 @@ class Evaluation:
     def __init__(self, env, time_policy=False):
         self.env = env
         self.time_policy = time_policy
+        self.num_episodes = 0
 
     def run_episode(
         self, initial_obs: dict, initial_info: dict, policy: PolicyBase
@@ -28,11 +29,14 @@ class Evaluation:
         transient_success = False
 
         policy.reset()
+        action_buffer = []
 
         while True:
             if self.time_policy:
                 time1 = time()
+            print("Action!!")
             action = policy.get_action(obs)
+            action_buffer.append(action)
             if self.time_policy:
                 print("policy execution time: ", time() - time1)
             obs, rew, _, truncated, info = self.env.step(action)
@@ -49,6 +53,9 @@ class Evaluation:
                 else:
                     print("Goal not reached at the end of the episode.")
                 break
+        np.save(f"action_buffer_ep{self.num_episodes}.npy", action_buffer)
+
+        self.num_episodes += 1
 
         ep_stats = {
             "success_rate": int(info["has_achieved"]),
