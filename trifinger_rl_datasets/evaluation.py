@@ -34,7 +34,6 @@ class Evaluation:
         while True:
             if self.time_policy:
                 time1 = time()
-            print("Action!!")
             action = policy.get_action(obs)
             action_buffer.append(action)
             if self.time_policy:
