@@ -654,6 +654,7 @@ class SimTriFingerCubeEnv(gym.Env):
         has_achieved = self.has_achieved(achieved_goal_pos_ori, desired_goal_pos_ori)
         info["has_achieved"] = has_achieved
         info["desired_goal"] = desired_goal_pos_ori
+        info["achieved_goal"] = achieved_goal_pos_ori
 
         return observation, info
 
