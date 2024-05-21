@@ -113,8 +113,10 @@ class SimTriFingerCubeEnv(gym.Env):
             # create camera object
             camera_config_dir = Path(__file__).resolve().parent / "data"
             calib_filename_pattern = f"r{self.camera_config_robot}_" + "camera{id}.yml"
-            self.camera = trifinger_simulation.camera.create_trifinger_camera_array_from_config(
-                camera_config_dir, calib_filename_pattern=calib_filename_pattern
+            self.camera = (
+                trifinger_simulation.camera.create_trifinger_camera_array_from_config(
+                    camera_config_dir, calib_filename_pattern=calib_filename_pattern
+                )
             )
         else:
             self.camera = None
@@ -354,6 +356,9 @@ class SimTriFingerCubeEnv(gym.Env):
             angle = 2.0 * np.arcsin(norm)
             orientation_check = angle < 2.0 * np.pi * ANGLE_THRESHOLD_DEG / 360.0
 
+            self.logger.warning(
+                f"Position check: {position_diff}, Orientation check: {angle}"
+            )
             return position_check and orientation_check
 
     def _check_action(self, action):
@@ -410,7 +415,7 @@ class SimTriFingerCubeEnv(gym.Env):
                 if extreme or self._timing_violation_counter >= 3:
                     delay = t_now - t_expected
                     self.logger.warning(
-                        f"Control loop got delayed by {delay} ms."
+                        f"Control loop got a bit delayed by {delay} ms."
                         " The action will be applied for a shorter time to catch up."
                         " Please check if your policy is fast enough (max. computation"
                         f" time should be <{1 + self.obs_action_delay} ms)."
@@ -452,9 +457,7 @@ class SimTriFingerCubeEnv(gym.Env):
 
         return observation, reward, False, truncated, info
 
-    def reset(  # type: ignore
-        self, preappend_actions: bool = True
-    ):
+    def reset(self, preappend_actions: bool = True):  # type: ignore
         """Reset the environment."""
 
         super().reset()
@@ -575,7 +578,12 @@ class SimTriFingerCubeEnv(gym.Env):
         if self.image_obs:
             if len(camera_observation.cameras[0].image.shape) == 2:
                 # images from real platform have to be debayered
-                images = np.array([cv2.cvtColor(cam.image, cv2.COLOR_BAYER_BG2RGB) for cam in camera_observation.cameras])
+                images = np.array(
+                    [
+                        cv2.cvtColor(cam.image, cv2.COLOR_BAYER_BG2RGB)
+                        for cam in camera_observation.cameras
+                    ]
+                )
             else:
                 # RGB camera images created with software renderer
                 # (using openGL requires GUI to run)
@@ -652,6 +660,7 @@ class SimTriFingerCubeEnv(gym.Env):
         self._clip_observation(observation)
 
         has_achieved = self.has_achieved(achieved_goal_pos_ori, desired_goal_pos_ori)
+
         info["has_achieved"] = has_achieved
         info["desired_goal"] = desired_goal_pos_ori
         info["achieved_goal"] = achieved_goal_pos_ori
@@ -681,5 +690,4 @@ class SimTriFingerCubeEnv(gym.Env):
         for position in self._cube_reset_traj[: self._reset_trajectory_length : 2]:
             robot_action = self.platform.Action(position=position)
             t = self._append_desired_action(robot_action)
-            self._wait_until_timeindex(t) # type ignore 
-                        
+            self._wait_until_timeindex(t)  # type ignore
