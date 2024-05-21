@@ -356,9 +356,6 @@ class SimTriFingerCubeEnv(gym.Env):
             angle = 2.0 * np.arcsin(norm)
             orientation_check = angle < 2.0 * np.pi * ANGLE_THRESHOLD_DEG / 360.0
 
-            self.logger.warning(
-                f"Position check: {position_diff}, Orientation check: {angle}"
-            )
             return position_check and orientation_check
 
     def _check_action(self, action):
